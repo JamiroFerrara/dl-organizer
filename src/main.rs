@@ -4,6 +4,9 @@ use foldeye::*;
 use directories::UserDirs;
 use std::fs;
 
+mod folderkind;
+use folderkind::FolderKindEnum::*;
+
 fn main() -> Result<(), std::io::Error> {
     if let Some(path) = get_downloads() {
         let directory = Directory::new(&path.clone())?;
@@ -66,7 +69,13 @@ fn clear_empty_folders(path: &String) {
 }
 
 fn create_dir(path: &str, name: &str) -> String {
-    let new_path = format!("{}/{}", path, name);
+    let mut new_path = "".to_string();
+    if let Some(kind) = folderkind::FolderKind::new().get_kind(name) {
+        new_path = format!("{}/{}", path, kind.to_string())
+    }
+
+    println!("{}", new_path);
+
     match fs::create_dir_all(&new_path) {
         Ok(_) => {}
         Err(e) => println!("Error creating directory: {}", e)
