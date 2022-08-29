@@ -1,0 +1,17 @@
+[package]
+name = "dl-organizer"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+directories = "4.0"
+foldeye = "1.0.6"
+tokio = { version = "1.20.1", features = ["full"] }
+
+[profile.dev]
+opt-level = 0
+
+[profile.release]
+opt-level = 3
