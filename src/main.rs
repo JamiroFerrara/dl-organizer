@@ -1,11 +1,10 @@
-#![windows_subsystem = "windows"]
+// #![windows_subsystem = "windows"]
 
 use foldeye::*;
 use directories::UserDirs;
 use std::fs;
 
 mod folderkind;
-use folderkind::FolderKindEnum::*;
 
 fn main() -> Result<(), std::io::Error> {
     if let Some(path) = get_downloads() {
@@ -24,6 +23,8 @@ fn main() -> Result<(), std::io::Error> {
                 }
             }
         })?;
+    } else {
+        println!("Could not find downloads folder");
     }
 
     Ok(())
