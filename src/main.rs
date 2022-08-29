@@ -88,6 +88,6 @@ fn create_dir(path: &str, name: &str) -> String {
 fn get_downloads () -> Option<String> {
     match UserDirs::new().unwrap().download_dir() {
         Some(path) => Some(path.to_str().unwrap().to_string()),
-        None => None,
+        None => Some("/home/stiwie/Downloads".to_string()), //linux version
     }
 }
