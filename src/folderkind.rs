@@ -10,6 +10,7 @@ pub enum FolderKindEnum {
     Executables(Vec<String>),
     Audio(Vec<String>),
     Video(Vec<String>),
+    Zip(Vec<String>),
     Other
 }
 
@@ -21,6 +22,7 @@ impl fmt::Display for FolderKindEnum {
             FolderKindEnum::Executables(_) => write!(f, "Executables"),
             FolderKindEnum::Audio(_) => write!(f, "Audio"),
             FolderKindEnum::Video(_) => write!(f, "Video"),
+            FolderKindEnum::Zip(_) => write!(f, "Zip"),
             FolderKindEnum::Other => write!(f, "Other"),
         }
     }
@@ -33,9 +35,10 @@ impl FolderKind {
         let video = FolderKindEnum::Video(vec!["mp4".to_string(), "avi".to_string(), "mkv".to_string(), "flv".to_string(), "wmv".to_string(), "mov".to_string(), "mpg".to_string(), "mpeg".to_string()]);
         let exe = FolderKindEnum::Executables(vec![".exe".to_string()]);
         let docs = FolderKindEnum::Documents(vec!["doc".to_string(), "docx".to_string(), "pdf".to_string(), "txt".to_string(), "odt".to_string(), "ods".to_string(), "odp".to_string(), "odg".to_string(), "odf".to_string(), "odb".to_string(), "odc".to_string(), "odm".to_string(), "ott".to_string(), "ots".to_string(), "otp".to_string(), "otg".to_string(), "oth".to_string(), "ots".to_string(), "otf".to_string(), "otc".to_string(), "odb".to_string(), "odm".to_string(), "ott".to_string(), "ots".to_string(), "otp".to_string(), "otg".to_string(), "oth".to_string(), "ots".to_string(), "otf".to_string(), "otc".to_string(), "odb".to_string(), "odm".to_string(), "ott".to_string(), "ots".to_string(), "otp".to_string(), "otg".to_string(), "oth".to_string(), "ots".to_string(), "otf".to_string(), "otc".to_string(), "odb".to_string(), "odm".to_string(), "ott".to_string(), "ots".to_string(), "otp".to_string(), "otg".to_string(), "oth".to_string(), "ots".to_string(), "otf".to_string(), "otc".to_string(), "odb".to_string(), "odm".to_string(), "ott".to_string(), "ots".to_string(), "otp".to_string(), "otg".to_string(), "oth".to_string(), "ots".to_string(), "otf".to_string(), "otc".to_string(), "odb".to_string(), "odm".to_string(), "ott".to_string(), "ots".to_string(), "otp".to_string()]);
+        let zip = FolderKindEnum::Zip(vec!["zip".to_string(), "rar".to_string(), "7z".to_string(), "tar".to_string(), "gz".to_string(), "xz".to_string(), "bz2".to_string(), "lz".to_string(), "lzma".to_string(), "zst".to_string(), "iso".to_string()]);
         let other = FolderKindEnum::Other;
 
-        let kinds = vec![audio, pictures, video, exe, docs, other];
+        let kinds = vec![audio, pictures, video, exe, docs, other, zip];
 
         Self {
             kinds: kinds
@@ -66,6 +69,11 @@ impl FolderKind {
                     })
                 }
                 FolderKindEnum::Video(files) => {
+                    files.iter().any(|file| {
+                        file_name.ends_with(file)
+                    })
+                }
+                FolderKindEnum::Zip(files) => {
                     files.iter().any(|file| {
                         file_name.ends_with(file)
                     })
