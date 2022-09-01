@@ -18,7 +18,9 @@ fn main() -> Result<(), std::io::Error> {
                     ComparisonActionEnum::Inserted(files) => { 
                         files_inserted_event(files, &path) 
                     }
-                    ComparisonActionEnum::Removed(_) => {}
+                    ComparisonActionEnum::Removed(files) => {
+                        files_removed_event(files, &path)
+                    }
                     ComparisonActionEnum::Replaced(_) => {}
                 }
             }
@@ -28,6 +30,40 @@ fn main() -> Result<(), std::io::Error> {
     }
 
     Ok(())
+}
+
+fn files_removed_event(files: Vec<String>, path: &String) {
+    clear_empty_folders(&path);
+
+    let is_part = files.iter().any(|file| { file.contains("part") });
+    if is_part {
+        move_remaining_files(path);
+    }
+}
+
+fn move_remaining_files(path: &String){
+    //get all files in path
+    let files = fs::read_dir(path).unwrap();
+    //filter files that are not in a folder
+    let files = files.filter(|file| {
+        let file = file.as_ref().unwrap();
+        let file = file.path();
+        let file = file.to_str().unwrap();
+        !file.contains("\\")
+    });
+    //move files to folder
+    for file in files {
+        let file = file.unwrap();
+        let file = file.path();
+        let file = file.to_str().unwrap();
+        let file = file.to_string();
+        let file_name = file.split("\\").last().unwrap().to_string();
+        let folder_name = file_name.split(".").next().unwrap().to_string();
+        let folder_path = format!("{}\\{}", path, folder_name);
+        let file_path = format!("{}\\{}", path, file_name);
+        fs::create_dir(&folder_path).unwrap();
+        fs::rename(&file_path, &format!("{}\\{}", folder_path, file_name)).unwrap();
+    }
 }
 
 fn files_inserted_event(files: Vec<String>, path: &String) {
@@ -44,12 +80,7 @@ fn files_inserted_event(files: Vec<String>, path: &String) {
             let result = fs::rename(&file, &new_file_path);
             match result {
                 Ok(_) => println!("Moved file {} to {}", &file, &new_file_path),
-                Err(e) => {
-                    println!("Error moving file {} to {}: {}", &file, &new_file_path, &e);
-
-                    // std::thread::sleep(std::time::Duration::from_millis(500));
-                    // files_inserted_event(vec![file.to_string()], path);
-                }
+                Err(e) => { println!("Error moving file {} to {}: {}", &file, &new_file_path, &e); }
             }
         });
     }
